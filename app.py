@@ -15,11 +15,11 @@ def convertation(choice: int) -> None:
     if not value.replace('.', '', 1): print('>> Введено не число!')
     else:
         to_conv = float(value)
-        match choice:
-            case 0:
-                res = float(current_session['quotes']['USDRUB']) * to_conv
-                print(f'{value} USD = ' + "%.3f" % res + ' RUB')
-
+        if patterns[choice][:3] == 'USD':
+            res = float(current_session['quotes'][patterns[choice]]) * to_conv
+            print(f'{value} {patterns[choice][:3]} = ' + "%.3f" % res + f' {patterns[choice][3:]}')
+        else:
+            print('>> В процессе!')
 
 def confirm_choice() -> bool:
     while True:
