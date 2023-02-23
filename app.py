@@ -9,15 +9,17 @@ headers = {}
 current_session = {}
 
 def convertation(choice: int) -> None:
-    patterns = ['USDRUB', 'USDEUR', 'RUBUSD', 'RUBEUR', 'EURUSD', 'EURRUB']
     print('>> Введите значение!')
     value = input('[conv]> ')
     if not value.replace('.', '', 1): print('>> Введено не число!')
     else:
         to_conv = float(value)
-        if patterns[choice][:3] == 'USD':
-            res = float(current_session['quotes'][patterns[choice]]) * to_conv
-            print(f'{value} {patterns[choice][:3]} = ' + "%.3f" % res + f' {patterns[choice][3:]}')
+        if choice[:3] == 'USD':
+            res = float(current_session['quotes'][choice]) * to_conv
+            print(f'{value} {choice[:3]} = ' + "%.3f" % res + f' {choice[3:]}')
+        elif choice[3:] == 'USD':
+            res = to_conv / float(current_session['quotes'][choice[3:] + choice[:3]])
+            print(f'{value} {choice[:3]} = ' + "%.3f" % res + f' {choice[3:]}')
         else:
             print('>> В процессе!')
 
@@ -62,14 +64,11 @@ def menu() -> None:
                 if confirm_choice(): get_update_data()
             case 'print': 
                 for (el_key, value) in current_session['quotes'].items(): print(f'{el_key[:3]} -> {el_key[3:]} >> {value}')
-            case 'conv': 
-                print('>> [1] USD -> RUB [2] USD -> EUR [3] RUB -> USD [4] RUB -> EUR [5] EUR -> USD [6] EUR -> RUB')
-                choice = input('[conv]> ')
-                if not choice.isnumeric(): print('>> Введено не число!')
-                else:
-                    if not 1 <= int(choice) <= 6: print('>> Неправильный ввод!')
-                    else: convertation(int(choice) - 1)
-            case 'help': pass 
+            case 'conv':
+                print('>> Введите код операции!')
+                choice = input('[conv]> ') # проверка наличия в списке, КОД - красивый вывод
+                convertation(choice)
+            case 'help': pass # коды активации
             case 'exit': break
             case _: print('>> Неправильная команда!')
 
