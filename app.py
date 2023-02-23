@@ -8,6 +8,19 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 headers = {}
 current_session = {}
 
+def convertation(choice: int) -> None:
+    patterns = ['USDRUB', 'USDEUR', 'RUBUSD', 'RUBEUR', 'EURUSD', 'EURRUB']
+    print('>> Введите значение!')
+    value = input('[conv]> ')
+    if not value.replace('.', '', 1): print('>> Введено не число!')
+    else:
+        to_conv = float(value)
+        match choice:
+            case 0:
+                res = float(current_session['quotes']['USDRUB']) * to_conv
+                print(f'{value} USD = ' + "%.3f" % res + ' RUB')
+
+
 def confirm_choice() -> bool:
     while True:
         print('>> Вы действительно хотите совершить это действие?[Да(1)/Нет(0)]')
@@ -20,7 +33,6 @@ def confirm_choice() -> bool:
 def get_session(name: str) -> dict:
     with open(f'{PATH}/journals/{name}', 'r') as session:
         return json.load(session)
-
     
 def save_new_session(data: dict) -> None:
     global current_session
@@ -39,7 +51,7 @@ def get_api_key() -> None:
         headers['apikey'] = key_holder.read()
         key_holder.close()
 
-def get_update_data():
+def get_update_data() -> None:
     if len(headers) == 0: get_api_key()
     save_new_session(requests.get('https://api.apilayer.com/currency_data/live?', headers=headers).json())
 
@@ -48,8 +60,16 @@ def menu() -> None:
         match input('> '):
             case 'get': 
                 if confirm_choice(): get_update_data()
-            case 'print': print(current_session)
-            case 'help': pass
+            case 'print': 
+                for (el_key, value) in current_session['quotes'].items(): print(f'{el_key[:3]} -> {el_key[3:]} >> {value}')
+            case 'conv': 
+                print('>> [1] USD -> RUB [2] USD -> EUR [3] RUB -> USD [4] RUB -> EUR [5] EUR -> USD [6] EUR -> RUB')
+                choice = input('[conv]> ')
+                if not choice.isnumeric(): print('>> Введено не число!')
+                else:
+                    if not 1 <= int(choice) <= 6: print('>> Неправильный ввод!')
+                    else: convertation(int(choice) - 1)
+            case 'help': pass 
             case 'exit': break
             case _: print('>> Неправильная команда!')
 
