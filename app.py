@@ -4,6 +4,7 @@ from datetime import datetime
 import json
 
 PATH = os.path.dirname(os.path.abspath(__file__))
+CURRENCIES = {}
 
 headers = {}
 current_session = {}
@@ -33,6 +34,15 @@ def confirm_choice() -> bool:
         else:
             if answer == '0': return False
             else: return True
+
+def fill_currencies() -> dict:
+    with open(f'{PATH}/setup/currencies.json', 'r', encoding='utf-8') as currencies:
+        return json.load(currencies)
+
+def check_code(code: str) -> bool:
+    if len(code) != 6: return False
+    if code[:3] in CURRENCIES.keys() and code[3:] in CURRENCIES.keys(): return True
+    return False
 
 def get_session(name: str) -> dict:
     with open(f'{PATH}/journals/{name}', 'r') as session:
@@ -68,12 +78,15 @@ def menu() -> None:
                 for (el_key, value) in current_session['quotes'].items(): print(f'{el_key[:3]} -> {el_key[3:]} >> {value}')
             case 'conv':
                 print('>> Введите код операции!')
-                choice = input('[conv]> ') # проверка наличия в списке, КОД - красивый вывод
-                convertation(choice)
+                code = input('[conv]> ') # проверка наличия в списке, КОД - красивый вывод
+                if check_code(code): convertation(code)
+                else: print('>> Введен неправильный код!')
             case 'help': pass # коды активации
             case 'exit': break
             case _: print('>> Неправильная команда!')
 
 if __name__ == '__main__':
+    # check for session and currencies
+    CURRENCIES = fill_currencies()
     set_session()
     menu()
