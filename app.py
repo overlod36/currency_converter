@@ -9,12 +9,21 @@ CURRENCIES = {}
 headers = {}
 current_session = {}
 
+def check_float(num: str) -> bool:
+    try:
+        float(num)
+    except ValueError:
+        return False
+    else:
+        return True
+
 def convertation(choice: str) -> None:
     print('>> Введите значение!')
     value = input('[conv]> ')
-    if not value.replace('.', '', 1): print('>> Введено не число!')
+    if not check_float(value): print('>> Введено не число!')
     else:
         to_conv = float(value)
+        print(to_conv)
         if choice[:3] == 'USD':
             res = float(current_session['quotes'][choice]) * to_conv
             print(f'{value} {choice[:3]} = ' + "%.3f" % res + f' {choice[3:]}')
@@ -24,7 +33,7 @@ def convertation(choice: str) -> None:
         else:
             tr1 = 1 / current_session['quotes']['USD' + choice[:3]]
             tr2 = current_session['quotes']['USD' + choice[3:]]
-            print(f'{value} {choice[:3]} = ' + "%.3f" % (tr1 * tr2) + f' {choice[3:]}')
+            print(f'{value} {choice[:3]} = ' + "%.3f" % (to_conv * tr1 * tr2) + f' {choice[3:]}')
 
 def confirm_choice() -> bool:
     while True:
