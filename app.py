@@ -8,7 +8,7 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 headers = {}
 current_session = {}
 
-def convertation(choice: int) -> None:
+def convertation(choice: str) -> None:
     print('>> Введите значение!')
     value = input('[conv]> ')
     if not value.replace('.', '', 1): print('>> Введено не число!')
@@ -21,7 +21,9 @@ def convertation(choice: int) -> None:
             res = to_conv / float(current_session['quotes'][choice[3:] + choice[:3]])
             print(f'{value} {choice[:3]} = ' + "%.3f" % res + f' {choice[3:]}')
         else:
-            print('>> В процессе!')
+            tr1 = 1 / current_session['quotes']['USD' + choice[:3]]
+            tr2 = current_session['quotes']['USD' + choice[3:]]
+            print(f'{value} {choice[:3]} = ' + "%.3f" % (tr1 * tr2) + f' {choice[3:]}')
 
 def confirm_choice() -> bool:
     while True:
