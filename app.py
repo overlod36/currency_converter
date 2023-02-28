@@ -23,7 +23,6 @@ def convertation(choice: str) -> None:
     if not check_float(value): print('>> Введено не число!')
     else:
         to_conv = float(value)
-        print(to_conv)
         if choice[:3] == 'USD':
             res = float(current_session['quotes'][choice]) * to_conv
             print(f'{value} {choice[:3]} = ' + "%.3f" % res + f' {choice[3:]}')
