@@ -25,8 +25,12 @@ class MainWindow(QMainWindow):
         self.currency_from.currentTextChanged.connect( self.cf_choice )
         self.currency_from_choice = self.currency_from.currentText()
         self.currency_to = QComboBox()
+        self.currency_to.addItems(['1','2','3'])
+        self.currency_to.currentTextChanged.connect( self.ct_choice )
+        self.currency_to_choice = self.currency_from.currentText()
         self.input_from = QLineEdit()
         self.input_to = QLineEdit()
+        self.input_to.setReadOnly(True)
 
         self.main_layout= QVBoxLayout()
         self.main_layout.addWidget(self.currency_from)
@@ -45,6 +49,9 @@ class MainWindow(QMainWindow):
     
     def cf_choice(self, s):
         self.currency_from_choice = s
+    
+    def ct_choice(self, s):
+        self.currency_to_choice = s
 
     def button_clicked(self):
         print(self.currency_from_choice)

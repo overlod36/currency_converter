@@ -10,29 +10,17 @@ headers = {}
 current_session = {}
 
 def check_float(num: str) -> bool:
-    try:
-        float(num)
-    except ValueError:
-        return False
-    else:
-        return True
+    try: float(num)
+    except ValueError: return False
+    else: return True
 
-def convertation(choice: str) -> None:
-    print('>> Введите значение!')
-    value = input('[conv]> ')
+def convertation(choice: str, value: str) -> list:
     if not check_float(value): print('>> Введено не число!')
     else:
         to_conv = float(value)
-        if choice[:3] == 'USD':
-            res = float(current_session['quotes'][choice]) * to_conv
-            print(f'{value} {choice[:3]} = ' + "%.3f" % res + f' {choice[3:]}')
-        elif choice[3:] == 'USD':
-            res = to_conv / float(current_session['quotes'][choice[3:] + choice[:3]])
-            print(f'{value} {choice[:3]} = ' + "%.3f" % res + f' {choice[3:]}')
-        else:
-            tr1 = 1 / current_session['quotes']['USD' + choice[:3]]
-            tr2 = current_session['quotes']['USD' + choice[3:]]
-            print(f'{value} {choice[:3]} = ' + "%.3f" % (to_conv * tr1 * tr2) + f' {choice[3:]}')
+        if choice[:3] == 'USD': return float(current_session['quotes'][choice]) * to_conv
+        elif choice[3:] == 'USD': return to_conv / float(current_session['quotes'][choice[3:] + choice[:3]])
+        else: return to_conv * (1 / current_session['quotes']['USD' + choice[:3]]) * current_session['quotes']['USD' + choice[3:]]
 
 def confirm_choice() -> bool:
     while True:
@@ -76,25 +64,3 @@ def get_api_key() -> None:
 def get_update_data() -> None:
     if len(headers) == 0: get_api_key()
     save_new_session(requests.get('https://api.apilayer.com/currency_data/live?', headers=headers).json())
-
-def menu() -> None:
-    while True:
-        match input('> '):
-            case 'get': 
-                if confirm_choice(): get_update_data()
-            case 'print': 
-                for (el_key, value) in current_session['quotes'].items(): print(f'{el_key[:3]} -> {el_key[3:]} >> {value}')
-            case 'conv':
-                print('>> Введите код операции!')
-                code = input('[conv]> ') # проверка наличия в списке, КОД - красивый вывод
-                if check_code(code): convertation(code)
-                else: print('>> Введен неправильный код!')
-            case 'help': pass # коды активации
-            case 'exit': break
-            case _: print('>> Неправильная команда!')
-
-if __name__ == '__main__':
-    # check for session and currencies
-    CURRENCIES = fill_currencies()
-    set_session()
-    menu()
