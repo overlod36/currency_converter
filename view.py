@@ -17,25 +17,29 @@ class MainWindow(QMainWindow):
 
         self.conv_button = QPushButton("Конвертация")
         self.conv_button.setCheckable(True)
-        self.conv_button.clicked.connect(self.button_clicked)
+        self.conv_button.clicked.connect(self.conv_button_clicked)
         self.conv_button.setFixedSize(100, 30)
         
         self.get_button = QPushButton("Обновить")
+        self.get_button.clicked.connect(self.upd_button_clicked)
+
         self.about_button = QPushButton("Справка")
         self.get_button.setFixedSize(80, 30)
         self.about_button.setFixedSize(70, 30)
         
         self.currency_from = QComboBox()
-        self.currency_from.addItems(['1','2','3'])
-        self.currency_from.setMaximumWidth(100)
+        self.currency_from.addItems(conv.CURRENCIES)
+        self.currency_from.setMaximumWidth(60)
+        self.currency_from.setCurrentIndex(conv.get_currency_index('USD'))
         self.currency_from.currentTextChanged.connect( self.cf_choice )
         self.currency_from_choice = self.currency_from.currentText()
 
         self.currency_to = QComboBox()
-        self.currency_to.addItems(['1','2','3'])
-        self.currency_to.setMaximumWidth(100)
+        self.currency_to.addItems(conv.CURRENCIES.keys())
+        self.currency_to.setMaximumWidth(60)
+        self.currency_to.setCurrentIndex(conv.get_currency_index('RUB'))
         self.currency_to.currentTextChanged.connect( self.ct_choice )
-        self.currency_to_choice = self.currency_from.currentText()
+        self.currency_to_choice = self.currency_to.currentText()
 
         self.input_from = QLineEdit()
         self.input_from.setMaximumWidth(100)
@@ -75,12 +79,17 @@ class MainWindow(QMainWindow):
     def ct_choice(self, s):
         self.currency_to_choice = s
 
-    def button_clicked(self):
-        print(self.currency_from_choice)
+    def conv_button_clicked(self):
+        self.input_to.setText(f'{conv.convertation(self.currency_from_choice + self.currency_to_choice, self.input_from.text()):.3f}')
+        
+    def upd_button_clicked(self):
+        pass
 
+if __name__ == '__main__':
 
-app = QApplication([])
+    conv.CURRENCIES = conv.fill_currencies()
+    conv.set_session()
 
-window = MainWindow()
-
-app.exec()
+    app = QApplication([])
+    window = MainWindow()
+    app.exec()

@@ -14,7 +14,7 @@ def check_float(num: str) -> bool:
     except ValueError: return False
     else: return True
 
-def convertation(choice: str, value: str) -> list:
+def convertation(choice: str, value: str) -> float:
     if not check_float(value): print('>> Введено не число!')
     else:
         to_conv = float(value)
@@ -64,3 +64,8 @@ def get_api_key() -> None:
 def get_update_data() -> None:
     if len(headers) == 0: get_api_key()
     save_new_session(requests.get('https://api.apilayer.com/currency_data/live?', headers=headers).json())
+
+
+def get_currency_index(currency: str) -> int:
+    if not currency in CURRENCIES: return 0
+    else: return list(CURRENCIES.keys()).index(currency)
