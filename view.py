@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import (QApplication, QPushButton, QWidget, 
                              QMainWindow, QStyle, QVBoxLayout, QComboBox, 
-                             QLineEdit, QHBoxLayout)
+                             QLineEdit, QHBoxLayout, QMessageBox)
 from PyQt6.QtCore import QSize, Qt
 
 import conv
@@ -15,6 +15,20 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_DirHomeIcon))
         self.setFixedSize(QSize(300, 150))
 
+        self.error_msgbox = QMessageBox()
+        self.error_msgbox.setIcon(QMessageBox.Icon.Critical)
+        self.error_msgbox.setWindowIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_MessageBoxCritical))
+        self.error_msgbox.setWindowTitle("Ошибка!")
+
+        self.info_msgbox = QMessageBox()
+        self.info_msgbox.setIcon(QMessageBox.Icon.Information)
+        self.info_msgbox.setWindowIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_MessageBoxInformation))
+        self.info_msgbox.setWindowTitle("Уведомление")
+
+        self.currency_msgbox = QMessageBox()
+        self.currency_msgbox.setWindowIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_MessageBoxInformation))
+        self.currency_msgbox.setWindowTitle("Валюты")
+
         self.conv_button = QPushButton("Конвертация")
         self.conv_button.setCheckable(True)
         self.conv_button.clicked.connect(self.conv_button_clicked)
@@ -23,9 +37,15 @@ class MainWindow(QMainWindow):
         self.get_button = QPushButton("Обновить")
         self.get_button.clicked.connect(self.upd_button_clicked)
 
-        self.about_button = QPushButton("Справка")
+        self.graph_button = QPushButton()
+        self.graph_button.setIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_DialogResetButton))
+        self.graph_button.setFixedSize(40, 30)
+
+        self.about_button = QPushButton()
         self.get_button.setFixedSize(80, 30)
-        self.about_button.setFixedSize(70, 30)
+        self.about_button.setFixedSize(40, 30)
+        self.about_button.setIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_TitleBarContextHelpButton))
+        self.about_button.clicked.connect(self.about_button_clicked)
         
         self.currency_from = QComboBox()
         self.currency_from.addItems(conv.CURRENCIES)
@@ -59,6 +79,7 @@ class MainWindow(QMainWindow):
         self.buttons_layout = QHBoxLayout()
         self.buttons_layout.addWidget(self.conv_button)
         self.buttons_layout.addWidget(self.get_button)
+        self.buttons_layout.addWidget(self.graph_button)
         self.buttons_layout.addWidget(self.about_button)
 
         self.main_layout= QVBoxLayout()
@@ -80,10 +101,23 @@ class MainWindow(QMainWindow):
         self.currency_to_choice = s
 
     def conv_button_clicked(self):
-        self.input_to.setText(f'{conv.convertation(self.currency_from_choice + self.currency_to_choice, self.input_from.text()):.3f}')
+        if self.input_from.text() == '': 
+            self.error_msgbox.setText("Значение не должно быть пустым!")
+            self.error_msgbox.exec()
+        elif not conv.check_float(self.input_from.text()): 
+            self.error_msgbox.setText("Введено не число!")
+            self.error_msgbox.exec()
+        else: self.input_to.setText(f'{conv.convertation(self.currency_from_choice + self.currency_to_choice, self.input_from.text()):.3f}')
         
     def upd_button_clicked(self):
-        pass
+        conv.get_update_data()
+        self.info_msgbox.setText("Данные обновлены!")
+        self.info_msgbox.exec()
+    
+    def about_button_clicked(self):
+        self.currency_msgbox.setText('!\nfs')
+        self.currency_msgbox.exec()
+
 
 if __name__ == '__main__':
 
