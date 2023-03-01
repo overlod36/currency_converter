@@ -1,9 +1,35 @@
 from PyQt6.QtWidgets import (QApplication, QPushButton, QWidget, 
                              QMainWindow, QStyle, QVBoxLayout, QComboBox, 
-                             QLineEdit, QHBoxLayout, QMessageBox)
+                             QLineEdit, QHBoxLayout, QMessageBox, QScrollArea
+                             ,QLabel)
 from PyQt6.QtCore import QSize, Qt
 
 import conv
+
+class AboutWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.initialize()
+    
+    def initialize(self):
+        self.setWindowTitle("Наименование валют")
+        self.setWindowIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_DirHomeIcon))
+        self.setMinimumSize(350, 400)
+
+        self.main_widget = QWidget()
+        self.scroll = QScrollArea()
+        self.l_layout = QVBoxLayout()
+    
+        for element in [f'{el_key} >> {conv.CURRENCIES[el_key]}' for el_key in conv.CURRENCIES]:
+            self.l_layout.addWidget(QLabel(element))
+
+        self.main_widget.setLayout(self.l_layout)
+
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setWidget(self.main_widget)
+        
+        
+        self.setCentralWidget(self.scroll)
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -24,10 +50,6 @@ class MainWindow(QMainWindow):
         self.info_msgbox.setIcon(QMessageBox.Icon.Information)
         self.info_msgbox.setWindowIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_MessageBoxInformation))
         self.info_msgbox.setWindowTitle("Уведомление")
-
-        self.currency_msgbox = QMessageBox()
-        self.currency_msgbox.setWindowIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_MessageBoxInformation))
-        self.currency_msgbox.setWindowTitle("Валюты")
 
         self.conv_button = QPushButton("Конвертация")
         self.conv_button.setCheckable(True)
@@ -114,9 +136,14 @@ class MainWindow(QMainWindow):
         self.info_msgbox.setText("Данные обновлены!")
         self.info_msgbox.exec()
     
-    def about_button_clicked(self):
-        self.currency_msgbox.setText('!\nfs')
-        self.currency_msgbox.exec()
+    def about_button_clicked(self, checked):
+        self.w = AboutWindow()
+        self.w.show()
+    
+    def closeEvent(self, event):
+        if self.w:
+            self.w.close()
+
 
 
 if __name__ == '__main__':
