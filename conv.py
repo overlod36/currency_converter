@@ -63,7 +63,7 @@ def get_api_key() -> None:
 
 def get_update_data() -> str:
     if len(headers) == 0: get_api_key()
-    try: save_new_session(requests.get('https://api.apilayer.com/currency_data/live?', headers=headers).json())
+    try: save_new_session(requests.get('https://api.apilayer.com/currency_data/live?', headers=headers, timeout=2).json())
     except requests.exceptions.Timeout:
         return 'Ошибка: Timeout'
     except requests.exceptions.ConnectionError:
