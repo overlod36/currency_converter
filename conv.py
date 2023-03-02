@@ -61,9 +61,15 @@ def get_api_key() -> None:
         headers['apikey'] = key_holder.read()
         key_holder.close()
 
-def get_update_data() -> None:
+def get_update_data() -> str:
     if len(headers) == 0: get_api_key()
-    save_new_session(requests.get('https://api.apilayer.com/currency_data/live?', headers=headers).json())
+    try: save_new_session(requests.get('https://api.apilayer.com/currency_data/live?', headers=headers).json())
+    except requests.exceptions.Timeout:
+        return 'Ошибка: Timeout'
+    except requests.exceptions.ConnectionError:
+        return 'Ошибка: ConnectionError'
+    return ''
+
 
 
 def get_currency_index(currency: str) -> int:

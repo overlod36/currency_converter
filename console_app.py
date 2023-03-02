@@ -5,7 +5,7 @@ def menu() -> None:
         match input('> '):
             case 'get': 
                 if conv.confirm_choice(): 
-                    conv.get_update_data()
+                    print(conv.get_update_data())
             case 'print': 
                 for (el_key, value) in conv.current_session['quotes'].items(): print(f'{el_key[:3]} -> {el_key[3:]} >> {value}')
             case 'conv':

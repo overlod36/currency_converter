@@ -47,8 +47,6 @@ class MainWindow(QMainWindow):
         self.error_msgbox.setWindowTitle("Ошибка!")
 
         self.info_msgbox = QMessageBox()
-        self.info_msgbox.setIcon(QMessageBox.Icon.Information)
-        self.info_msgbox.setWindowIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_MessageBoxInformation))
         self.info_msgbox.setWindowTitle("Уведомление")
 
         self.conv_button = QPushButton("Конвертация")
@@ -114,6 +112,7 @@ class MainWindow(QMainWindow):
         self.widget.setLayout(self.main_layout)
 
         self.setCentralWidget(self.widget)
+        self.w = AboutWindow()
         self.show()
     
     def cf_choice(self, s):
@@ -132,12 +131,18 @@ class MainWindow(QMainWindow):
         else: self.input_to.setText(f'{conv.convertation(self.currency_from_choice + self.currency_to_choice, self.input_from.text()):.3f}')
         
     def upd_button_clicked(self):
-        conv.get_update_data()
-        self.info_msgbox.setText("Данные обновлены!")
+        error = conv.get_update_data()
+        if error != '':
+            self.info_msgbox.setText(error)
+            self.info_msgbox.setIcon(QMessageBox.Icon.Critical)
+            self.info_msgbox.setWindowIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_MessageBoxCritical))
+        else:
+            self.info_msgbox.setText("Данные обновлены!")
+            self.info_msgbox.setIcon(QMessageBox.Icon.Information)
+            self.info_msgbox.setWindowIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_MessageBoxInformation))
         self.info_msgbox.exec()
     
     def about_button_clicked(self, checked):
-        self.w = AboutWindow()
         self.w.show()
     
     def closeEvent(self, event):
