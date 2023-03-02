@@ -9,27 +9,11 @@ CURRENCIES = {}
 headers = {}
 current_session = {}
 
-def check_float(num: str) -> bool:
-    try: float(num)
-    except ValueError: return False
-    else: return True
-
 def convertation(choice: str, value: str) -> float:
-    if not check_float(value): print('>> Введено не число!')
-    else:
-        to_conv = float(value)
-        if choice[:3] == 'USD': return float(current_session['quotes'][choice]) * to_conv
-        elif choice[3:] == 'USD': return to_conv / float(current_session['quotes'][choice[3:] + choice[:3]])
-        else: return to_conv * (1 / current_session['quotes']['USD' + choice[:3]]) * current_session['quotes']['USD' + choice[3:]]
-
-def confirm_choice() -> bool:
-    while True:
-        print('>> Вы действительно хотите совершить это действие?[Да(1)/Нет(0)]')
-        answer = input('[confirm]> ')
-        if answer not in ('0', '1'): print('>> Неправильный ввод!')
-        else:
-            if answer == '0': return False
-            else: return True
+    to_conv = float(value)
+    if choice[:3] == 'USD': return float(current_session['quotes'][choice]) * to_conv
+    elif choice[3:] == 'USD': return to_conv / float(current_session['quotes'][choice[3:] + choice[:3]])
+    else: return to_conv * (1 / current_session['quotes']['USD' + choice[:3]]) * current_session['quotes']['USD' + choice[3:]]
 
 def fill_currencies() -> dict:
     with open(f'{PATH}/setup/currencies.json', 'r', encoding='utf-8') as currencies:
@@ -52,9 +36,12 @@ def save_new_session(data: dict) -> None:
         outf.close()
     current_session = data
 
-def set_session() -> None:
+def set_session() -> bool:
     global current_session
-    if len(os.listdir(f'{PATH}\journals')) != 0: current_session = get_session(list(reversed(os.listdir(f'{PATH}\journals')))[0])
+    if len(os.listdir(f'{PATH}\journals')) != 0: 
+        current_session = get_session(list(reversed(os.listdir(f'{PATH}\journals')))[0])
+        return True
+    return False
  
 def get_api_key() -> None:
     with open(f"{PATH}/setup/api_key.txt") as key_holder:
@@ -63,14 +50,12 @@ def get_api_key() -> None:
 
 def get_update_data() -> str:
     if len(headers) == 0: get_api_key()
-    try: save_new_session(requests.get('https://api.apilayer.com/currency_data/live?', headers=headers, timeout=2).json())
+    try: save_new_session(requests.get('https://api.apilayer.com/currency_data/live?', headers=headers, timeout=5).json())
     except requests.exceptions.Timeout:
         return 'Ошибка: Timeout'
     except requests.exceptions.ConnectionError:
         return 'Ошибка: ConnectionError'
     return ''
-
-
 
 def get_currency_index(currency: str) -> int:
     if not currency in CURRENCIES: return 0
