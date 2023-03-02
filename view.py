@@ -31,6 +31,18 @@ class AboutWindow(QMainWindow):
         
         self.setCentralWidget(self.scroll)
 
+class ErrorMessage(QMessageBox):
+    def __init__(self):
+        super().__init__()
+        self.initialize()
+    
+    def initialize(self):
+        self.setWindowTitle("Ошибка загрузки")
+        self.setIcon(QMessageBox.Icon.Critical)
+        self.setText('Ошибка загрузки сессии!')
+        self.setWindowIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_MessageBoxCritical))
+        self.show()
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -153,9 +165,13 @@ class MainWindow(QMainWindow):
 
 if __name__ == '__main__':
 
-    conv.CURRENCIES = conv.fill_currencies()
-    conv.set_session()
-
     app = QApplication([])
-    window = MainWindow()
-    app.exec()
+    conv.CURRENCIES = conv.fill_currencies()
+    if not conv.set_session():
+        ms = conv.get_update_data()
+        if ms != '': 
+            window = ErrorMessage()
+            app.exec()
+    else:
+        window = MainWindow()
+        app.exec()

@@ -9,6 +9,11 @@ CURRENCIES = {}
 headers = {}
 current_session = {}
 
+def check_float(num: str) -> bool:
+    try: float(num)
+    except ValueError: return False
+    else: return True
+
 def convertation(choice: str, value: str) -> float:
     to_conv = float(value)
     if choice[:3] == 'USD': return float(current_session['quotes'][choice]) * to_conv
@@ -50,7 +55,7 @@ def get_api_key() -> None:
 
 def get_update_data() -> str:
     if len(headers) == 0: get_api_key()
-    try: save_new_session(requests.get('https://api.apilayer.com/currency_data/live?', headers=headers, timeout=5).json())
+    try: save_new_session(requests.get('https://api.apilayer.com/currency_data/live?', headers=headers, timeout=1).json())
     except requests.exceptions.Timeout:
         return 'Ошибка: Timeout'
     except requests.exceptions.ConnectionError:

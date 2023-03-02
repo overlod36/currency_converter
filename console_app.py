@@ -1,11 +1,6 @@
 import conv
 import sys
 
-def check_float(num: str) -> bool:
-    try: float(num)
-    except ValueError: return False
-    else: return True
-
 def confirm_choice() -> bool:
     while True:
         print('>> Вы действительно хотите совершить это действие?[Да(1)/Нет(0)]')
@@ -29,7 +24,7 @@ def menu() -> None:
                 if conv.check_code(choice):
                     print('>> Введите значение!')
                     value = input('[conv]> ')
-                    if not check_float(value): print('>> Введено не число!')
+                    if not conv.check_float(value): print('>> Введено не число!')
                     else: 
                         res = conv.convertation(choice, value)
                         print(f'{value} {choice[:3]} = ' + "%.3f" % res + f' {choice[3:]}')
